@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+body{
+    background-color: #222831 !important;
+    margin:0;
+    overflow-x: hidden;
+    font-family: 'Roboto Condensed', sans-serif !important;
+}
+
+.section{
+    padding-left: 2rem;
+    padding-right: 2rem;
+
+    @media only screen and (min-width: 992px) {
+        padding-left: 5rem;
+        padding-right: 5rem;
+    }
+}

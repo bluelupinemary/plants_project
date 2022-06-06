@@ -1,0 +1,12 @@
+.header-bar{
+    /* background: linear-gradient(90deg, #2abc59 0%, #24a665 100%); */
+    background: #ffffff;
+    height: 4rem;
+    display: flex;
+    margin: 1rem;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+
