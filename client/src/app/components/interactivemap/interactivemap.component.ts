@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {Vector as VectorLayer} from 'ol/layer';
@@ -26,42 +26,139 @@ import Overlay from 'ol/Overlay';
 
 
 export class InteractivemapComponent implements OnInit {
+  @Input() plants : any[];
+  @Input() isFiltered:boolean;
+  @Input() topN:any;
   map : Map;
-  plants : any[] = [];
   circleFeature : any;
+  vectorSource : any;
+
   plantIconsFeatures : any[] = [];
   categoryColorMap : any = {
-    "WIND":"rgba(20, 255, 236,0.5)",
-    "GAS": "rgba(205,95,142,0.5)",
-    "OIL": "rgba(89,129,87,0.5)",
-    "HYDRO": "rgba(252,176,122,0.5)",
-    "COAL": "rgba(110,70,128,0.5)",
-    "OTHF": "rgba(236,95,105,0.5)",
-    "BIOMASS": "rgba(236,231,107,0.5)",
-    "OFSL": "rgba(143,46,35,0.5)",
-    "SOLAR": "rgba(106,237,177,0.5)",
-    "NUCLEAR": "rgba(8,67,93,0.5)",
-    "GEOTHERMAL": "rgba(51,223,238,0.5)",
+    "WIND":"rgba(20, 255, 236,0.75)",
+    "GAS": "rgba(205,95,142,0.75)",
+    "OIL": "rgba(89,129,87,0.75)",
+    "HYDRO": "rgba(252,176,122,0.75)",
+    "COAL": "rgba(110,70,128,0.75)",
+    "OTHF": "rgba(236,95,105,0.75)",
+    "BIOMASS": "rgba(236,231,107,0.75)",
+    "OFSL": "rgba(143,46,35,0.75)",
+    "SOLAR": "rgba(106,237,177,0.75)",
+    "NUCLEAR": "rgba(8,67,93,0.75)",
+    "GEOTHERMAL": "rgba(51,223,238,0.75)",
   }
 
   constructor(private plantstateService: PlantstateService) { }
 
-  ngOnInit(): void {
-    this.plantstateService.getAllPlants().subscribe((plants)=>{
-      this.plants = plants;      
+  ngOnChanges(): void{
+    console.log(this.topN, "in child");
+    if(this.isFiltered){
+      if(this.topN && this.topN > 0){
+        console.log('redraw map now')
+        this.redrawMap();
+      }
+      else{
+        this.plantstateService.getAllPlants().subscribe((plants)=>{
+          this.plants = plants;    
+          this.reInitMap();  
+        });
+      }
+    }else{
       this.generateMap();
-    })
+    }
+    
+    // 
+  }
+
+  ngOnInit(): void {
+    // console.log(this.plants, "from parent")
+    
 
     // this.plantstateService.getAllPlantsByState().subscribe((plants)=>{
     //   this.plants = plants;      
     //   this.generateMap();
     // })
+  }
 
+  reInitMap(){
+      console.log('reinitMap here')
+      this.vectorSource.refresh();
+      this.plantIconsFeatures = [];
+
+      this.plants.forEach((plant) => {
+        const plantIcon = new Feature({
+          //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
+          geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
+        });
+      
+  
+        let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(255,0,0,0.5)";
+        
+        plantIcon.setStyle(
+          new Style({
+          //  image: new Icon(({
+          //    color: '#ffffff',
+          //    crossOrigin: 'anonymous',
+          //    src: '../../../assets/power-plant-icon.svg',
+          //    imgSize: [25,25]
+          //  }))
+          fill: new Fill({
+            color: setColor,
+          }),
+          stroke: new Stroke({
+            color: '#DAA520',
+            width: 0.5
+          }),
+          })
+        );
+
+        this.plantIconsFeatures.push(plantIcon);
+      })
+      
+
+      this.vectorSource.addFeatures(this.plantIconsFeatures)
+
+  }
+
+  redrawMap(){
+    if(this.isFiltered){
+      console.log('redrawing here')
+      this.vectorSource.refresh();
+      this.plantIconsFeatures = [];
+      
+      Object.keys(this.plants).forEach((category:any)=>{
+        
+        this.plants[category].forEach((plant:any)=>{
+          const plantIcon2 = new Feature({
+            //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
+            geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000)
+          });
     
+          let setColor = (category !== "" && this.categoryColorMap[category.toUpperCase()]) ? this.categoryColorMap[category.toUpperCase()] : "#DAA52080";
+          plantIcon2.setStyle(
+            new Style({
+            //  image: new Icon(({
+            //    color: '#ffffff',
+            //    crossOrigin: 'anonymous',
+            //    src: '../../../assets/power-plant-icon.svg',
+            //    imgSize: [25,25]
+            //  }))
+            fill: new Fill({
+              color: setColor,
+            }),
+            stroke: new Stroke({
+              color: '#DAA520',
+              width: 0.5
+            }),
+            })
+          );
+          this.plantIconsFeatures.push(plantIcon2);
+        })
 
+      })
+      this.vectorSource.addFeatures(this.plantIconsFeatures)
 
-    // generate map
-    
+    }
   }
 
   generateMap(){
@@ -78,47 +175,48 @@ export class InteractivemapComponent implements OnInit {
       }
     });
 
-    this.plants.forEach((plant) => {
-      const plantIcon = new Feature({
-        //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
-        geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000)
-      });
+
+      this.plants.forEach((plant) => {
+        const plantIcon = new Feature({
+          //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
+          geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
+        });
+      
+  
+        let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(255,0,0,0.5)";
+        
+        plantIcon.setStyle(
+          new Style({
+          //  image: new Icon(({
+          //    color: '#ffffff',
+          //    crossOrigin: 'anonymous',
+          //    src: '../../../assets/power-plant-icon.svg',
+          //    imgSize: [25,25]
+          //  }))
+          fill: new Fill({
+            color: setColor,
+          }),
+          stroke: new Stroke({
+            color: '#DAA520',
+            width: 0.5
+          }),
+          })
+        );
+
+        this.plantIconsFeatures.push(plantIcon);
+      })
+
     
 
-      let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(255,0,0,0.5)";
-      
-      plantIcon.setStyle(
-        new Style({
-        //  image: new Icon(({
-        //    color: '#ffffff',
-        //    crossOrigin: 'anonymous',
-        //    src: '../../../assets/power-plant-icon.svg',
-        //    imgSize: [25,25]
-        //  }))
-        fill: new Fill({
-          color: setColor,
-        }),
-        stroke: new Stroke({
-          color: 'teal',
-          width: 1
-        }),
-        })
-      );
-
-      this.plantIconsFeatures.push(plantIcon);
-    })
-
-    const vectorSource = new VectorSource({
+    this.vectorSource = new VectorSource({
       features: this.plantIconsFeatures
     })
 
-    const vectorLayer = new VectorLayer({
-      source: vectorSource
+    let vectorLayer = new VectorLayer({
+      source: this.vectorSource
     })
 
-  
-
-
+    
     this.map = new Map({
       target: 'us-map',
       layers: [

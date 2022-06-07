@@ -11,13 +11,16 @@ export class PlantstateService {
 
   constructor(private http:HttpClient) { }
 
+  getAllStates(): Observable<any>{
+    return this.http.get(`${this.baseUrl}/`);
+  }
+
   getAllPlants(): Observable<any>{
     return this.http.get(`${this.baseUrl}/plants`);
   }
 
-  getAllPlantsByState(): Observable<any>{
-    // return this.http.get(`${this.baseUrl}/plants/${state.code}`);
-    return this.http.get(`${this.baseUrl}/plants/AK`);
+  getAllPlantsByState(state:string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/plants/${state}`);
   }
 
   getTopPlantsByNetGeneration(n : number): Observable<any>{

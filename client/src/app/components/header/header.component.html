@@ -1,10 +1,24 @@
 <div class="header-bar">
-    <div>
-        <a (click)="onStateChange()"> STATE DROPDOWN HERE </a>  | 
-        <a (click)="onStateChange()"> GEN CATEGORY DD HERE </a>
+    <div class="col-9">
+        <form [formGroup]="form" (ngSubmit)="submitForm()" class="d-flex align-items-center">
+            <div class="">
+                <div class="d-flex align-items-center justify-content-between input-fields-wrapper">
+                    <!-- <h4 class="m-0">View Power Plants: </h4> -->
+                    <span class="top-n-title">Show Top: </span>
+                    <input class="top-n-input form-control" type="text" formControlName="topNForm" name="top-n-input" placeholder="e.g. 10" /> <span>Plants</span>
+                    <select formControlName="stateForm" class="form-control">
+                        <option>Choose State</option>
+                        <option *ngFor="let state of stateFormList" [value]="state.code">{{state.name}}</option>
+                    </select>
+
+                    <select formControlName="categoryForm" class="form-control">
+                        <option>Choose Plant Type</option>
+                        <option *ngFor="let category of categoryFormList" [value]="category.key">{{category.val}}</option>
+                    </select>
+                    <button class="btn btn-primary show-plants-btn" type="submit">Show Plants</button>
+                </div>
+            </div>
+        </form>
     </div>
-    <div>
-        <a (click)="onStateChange()"> TOP N INPUT HERE </a>
-    </div>
-    <app-searchbar></app-searchbar>
+    <app-searchbar class="col-3"></app-searchbar>
 </div>

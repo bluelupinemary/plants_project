@@ -8,21 +8,47 @@ import { PlantstateService } from 'src/app/services/plantstate.service';
 })
 export class MapdetailsComponent implements OnInit {
   generations: any = {};
-  titleGenerationsMap : Object = {
-    biomass: "Biomass",
-    coal: "Coal",
-    fossil: "Fossil",
-    gas: "Gas",
-    geothermal: "Geothermal",
-    hydro: "Hydro",
-    nonrenewable: "Non-renewable",
-    nuclear: "Nuclear",
-    oil: "Oil",
-    purchasedfuel: "Other Purchased Fuel",
-    renewable: "Renewable",
-    solar: "Solar",
-    wind: "Wind"
-  }
+  categoryFormList : any[] = [
+    {
+      "key":"BIOMASS","val": "Biomass"
+    },
+    {
+      "key":"COAL","val": "Coal"
+    },
+    {
+      "key":"OFSL","val": "Fossil"
+    },
+    {
+      "key":"GAS","val": "Gas"
+    },
+    {
+      "key":"GEOTHERMAL","val": "Geothermal"
+    },
+    {
+      "key":"HYDRO","val": "Hydro"
+    },
+    {
+      "key":"NONRENEWABLE","val": "Non-renewable"
+    },
+    {
+      "key":"NUCLEAR","val": "Nuclear"
+    },
+    {
+      "key":"OIL","val": "Oil"
+    },
+    {
+      "key":"OTHF","val": "Other Purchased Fuel"
+    },
+    {
+      "key":"RENEWABLE","val": "Renewable"
+    },
+    {
+      "key":"SOLAR","val": "Solar"
+    },
+    {
+      "key":"WIND","val": "Wind"
+    }
+  ]
 
   
 
