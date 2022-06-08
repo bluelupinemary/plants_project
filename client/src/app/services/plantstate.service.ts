@@ -23,9 +23,33 @@ export class PlantstateService {
     return this.http.get(`${this.baseUrl}/plants/${state}`);
   }
 
+  getAllPlantsByCategory(category:string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/plants/all/${category}`);
+  }
+
+  getAllPlantsByStateByCategory(category:string, state:string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/plants/${state}/${category}`);
+  }
+
   getTopPlantsByNetGeneration(n : number): Observable<any>{
     // return this.http.get(`${this.baseUrl}/plants/${state.code}`);
     return this.http.get(`${this.baseUrl}/generation/${n}`);
+  }
+
+  getTopPlantsByNetGenerationByState(state: string,n : number): Observable<any>{
+    return this.http.get(`${this.baseUrl}/generation/${n}/${state}`);
+  }
+
+  getTopPlantsByNetGenerationByCategory(category: string,n : number): Observable<any>{
+    return this.http.get(`${this.baseUrl}/generation/${n}/all/${category}`);
+  }
+
+  getTopPlantsByNetGenerationByStateByCategory(state:string,category: string,n : number): Observable<any>{
+    return this.http.get(`${this.baseUrl}/generation/${n}/${state}/${category}`);
+  }
+  
+  getPlantDetails(id:any): Observable<any>{
+    return this.http.get(`${this.baseUrl}/plant/${id}`);
   }
 
   // getStates(): Observable<any>{

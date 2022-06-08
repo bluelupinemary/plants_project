@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {Vector as VectorLayer} from 'ol/layer';
@@ -17,6 +17,7 @@ import { Color } from 'ol/color';
 import { map } from 'rxjs';
 import { getLocaleDayPeriods } from '@angular/common';
 import Overlay from 'ol/Overlay';
+import CircleStyle from 'ol/style/Circle';
 
 @Component({
   selector: 'app-interactivemap',
@@ -28,24 +29,28 @@ import Overlay from 'ol/Overlay';
 export class InteractivemapComponent implements OnInit {
   @Input() plants : any[];
   @Input() isFiltered:boolean;
+  @Input() hasState:boolean;
+  @Input() hasCategory:boolean;
   @Input() topN:any;
+  @Output() onPlantMarkerClick = new EventEmitter();
+  isFetchDone : boolean = false;
   map : Map;
   circleFeature : any;
   vectorSource : any;
 
   plantIconsFeatures : any[] = [];
   categoryColorMap : any = {
-    "WIND":"rgba(20, 255, 236,0.75)",
-    "GAS": "rgba(205,95,142,0.75)",
-    "OIL": "rgba(89,129,87,0.75)",
-    "HYDRO": "rgba(252,176,122,0.75)",
-    "COAL": "rgba(110,70,128,0.75)",
-    "OTHF": "rgba(236,95,105,0.75)",
-    "BIOMASS": "rgba(236,231,107,0.75)",
-    "OFSL": "rgba(143,46,35,0.75)",
-    "SOLAR": "rgba(106,237,177,0.75)",
-    "NUCLEAR": "rgba(8,67,93,0.75)",
-    "GEOTHERMAL": "rgba(51,223,238,0.75)",
+    "WIND":"rgba(245, 39, 145, 0.75)",
+    "GAS": "rgba(255, 0, 0, 0.75)",
+    "OIL": "rgba(220, 0, 255, 0.75)",
+    "HYDRO": "rgba(29, 0, 255, 0.75)",
+    "COAL": "rgba(0, 0, 0, 0.75)",
+    "OTHF": "rgba(0, 205, 255, 0.75)",
+    "BIOMASS": "rgba(0, 255, 8, 0.75)",
+    "OFSL": "rrgba(0, 255, 8, 0.75)",
+    "SOLAR": "rgba(231, 255, 0, 0.75)",
+    "NUCLEAR": "rgba(255, 109, 0, 0.75)",
+    "GEOTHERMAL": "rgba(149, 85, 38, 0.75)",
   }
 
   constructor(private plantstateService: PlantstateService) { }
@@ -55,13 +60,12 @@ export class InteractivemapComponent implements OnInit {
     if(this.isFiltered){
       if(this.topN && this.topN > 0){
         console.log('redraw map now')
-        this.redrawMap();
+        
+        if(this.hasState) this.reInitMap();
+        else this.redrawMap();
       }
       else{
-        this.plantstateService.getAllPlants().subscribe((plants)=>{
-          this.plants = plants;    
-          this.reInitMap();  
-        });
+        this.reInitMap();
       }
     }else{
       this.generateMap();
@@ -71,17 +75,10 @@ export class InteractivemapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // console.log(this.plants, "from parent")
-    
-
-    // this.plantstateService.getAllPlantsByState().subscribe((plants)=>{
-    //   this.plants = plants;      
-    //   this.generateMap();
-    // })
   }
 
   reInitMap(){
-      console.log('reinitMap here')
+      console.log('reinitMap here', this.plants)
       this.vectorSource.refresh();
       this.plantIconsFeatures = [];
 
@@ -89,10 +86,14 @@ export class InteractivemapComponent implements OnInit {
         const plantIcon = new Feature({
           //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
           geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
+          name:plant.PNAME,
+          state: plant.PSTATABB,
+          category:plant.PLFUELCT,
+          id:plant.SEQPLT20
         });
       
   
-        let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(255,0,0,0.5)";
+        let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(194, 68, 68, 0.75)";
         
         plantIcon.setStyle(
           new Style({
@@ -131,7 +132,11 @@ export class InteractivemapComponent implements OnInit {
         this.plants[category].forEach((plant:any)=>{
           const plantIcon2 = new Feature({
             //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
-            geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000)
+            geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
+            name:plant.PNAME,
+            state: plant.PSTATABB,
+            category:plant.PLFUELCT,
+            id:plant.SEQPLT20
           });
     
           let setColor = (category !== "" && this.categoryColorMap[category.toUpperCase()]) ? this.categoryColorMap[category.toUpperCase()] : "#DAA52080";
@@ -180,6 +185,10 @@ export class InteractivemapComponent implements OnInit {
         const plantIcon = new Feature({
           //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
           geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
+          name:plant.PNAME,
+          state: plant.PSTATABB,
+          category:plant.PLFUELCT,
+          id:plant.SEQPLT20
         });
       
   
@@ -187,6 +196,7 @@ export class InteractivemapComponent implements OnInit {
         
         plantIcon.setStyle(
           new Style({
+        
           //  image: new Icon(({
           //    color: '#ffffff',
           //    crossOrigin: 'anonymous',
@@ -233,6 +243,9 @@ export class InteractivemapComponent implements OnInit {
 
     this.map.addLayer(vectorLayer);
 
+
+
+
     // pointermove
     this.map.on('singleclick', (evt) => {
       const coordinate = evt.coordinate;
@@ -240,9 +253,21 @@ export class InteractivemapComponent implements OnInit {
     
       const pixel = this.map.getEventPixel(evt.originalEvent);
       const hit = this.map.hasFeatureAtPixel(pixel);
+      
       console.log(evt, pixel, hit)
       if(hit){
-        content.innerHTML = '<p>This is a plant</p>';
+        this.map.forEachFeatureAtPixel(pixel, (feature, layer) => {
+          // do something
+          console.log(feature.get('name'),feature.get('state'),feature.get('category')); // <---- SEEMS LIKE 'PRIVATE' prop
+          content.innerHTML = '<div class="popup-wrapper">'+
+          'Plant Name: <span class="plant-name">'+feature.get('name')+'</span><br/>'+
+          'Location: <span class="plant-state">'+feature.get('state')+'</span><br/>'+
+          'Category: <span class="plant-category">'+feature.get('category')+'</span>'+
+          '</div>';
+          this.mapMarkerClick(feature.get('id'))
+
+        });
+        
         overlay.setPosition(coordinate);
 
         console.log('hit')
@@ -260,6 +285,12 @@ export class InteractivemapComponent implements OnInit {
       return false;
     };
 
+  }
+
+  mapMarkerClick(plantId:any){
+    console.log("marker is clicked");
+    // this.formSubmitValues = this.form.value;
+    this.onPlantMarkerClick.emit(plantId)
   }
 
 }

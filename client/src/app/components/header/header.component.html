@@ -7,12 +7,12 @@
                     <span class="top-n-title">Show Top: </span>
                     <input class="top-n-input form-control" type="text" formControlName="topNForm" name="top-n-input" placeholder="e.g. 10" /> <span>Plants</span>
                     <select formControlName="stateForm" class="form-control">
-                        <option>Choose State</option>
+                        <option [value]="null" selected="selected">All States</option>
                         <option *ngFor="let state of stateFormList" [value]="state.code">{{state.name}}</option>
                     </select>
 
                     <select formControlName="categoryForm" class="form-control">
-                        <option>Choose Plant Type</option>
+                        <option [value]="null" selected="selected">All Plant Types</option>
                         <option *ngFor="let category of categoryFormList" [value]="category.key">{{category.val}}</option>
                     </select>
                     <button class="btn btn-primary show-plants-btn" type="submit">Show Plants</button>

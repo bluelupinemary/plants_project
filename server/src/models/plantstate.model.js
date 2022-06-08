@@ -74,7 +74,8 @@ PlantState.getAllDistinctStates = (result) => {
 }
 
 PlantState.getAllPlants = (result) => {
-    dbConn.query("select PNAME,PSTATABB, PLFUELCT, LAT, LON from plant_state", (err, res)=>{
+    //select PNAME,PSTATABB, PLFUELCT, LAT, LON, PLGENACL, PLGENAOL,PLGENAGS,PLGENANC,PLGENAHY,PLGENABM,PLGENAWI,PLGENASO,PLGENAGT,PLGENAOF,PLGENAOP,PLGENATN,PLGENATR,PLGENATH from plant_state
+    dbConn.query("select SEQPLT20, PNAME,PSTATABB, PLFUELCT, LAT, LON from plant_state", (err, res)=>{
         if(err){
             console.log("Error while fetching plants location",err);
             result(null, err);
@@ -85,8 +86,8 @@ PlantState.getAllPlants = (result) => {
     })
 }
 
-PlantState.getPlantsByState = (stateAbb, result) => {
-    dbConn.query("select PNAME,PSTATABB, LAT, LON from plant_state where PSTATABB = ? ", stateAbb, (err, res)=>{
+PlantState.getAllPlantsByState = (state, result) => {
+    dbConn.query("select SEQPLT20,PNAME,PSTATABB, LAT, LON,PLFUELCT from plant_state where PSTATABB = ? ", state, (err, res)=>{
         if(err){
             console.log("Error while fetching plants location",err);
             result(null, err);
@@ -98,26 +99,82 @@ PlantState.getPlantsByState = (stateAbb, result) => {
 }
 
 //get plants by category
+PlantState.getAllPlantsByCategory = (category, result) => {
+    const categoryMap = {
+        'COAL':'PLGENACL',
+        'OIL':'PLGENAOL',
+        'GAS':'PLGENAGS',
+       'NUCLEAR':'PLGENANC',
+       'HYDRO':'PLGENAHY',
+       'BIOMASS':'PLGENABM',
+       'WIND':'PLGENAWI',
+       'SOLAR':'PLGENASO',
+       'GEOTHERMAL':'PLGENAGT',
+       'OFSL':'PLGENAOF',
+       'OTHF':'PLGENAOP',
+       'RENEWABLE':'PLGENATN',
+       'NONRENEWABLE':'PLGENATR',
+       'NONHYDRO':'PLGENATH'
+    }
+    console.log('categorymap',category, categoryMap, categoryMap[category])
+    // let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT,"+categoryMap[category]+" as val from plant_state order by "+categoryMap[category]+" desc";
+    dbConn.query("select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT,"+categoryMap[category]+" as val from plant_state where PLFUELCT = ? order by "+categoryMap[category]+" desc", [category], (err, res)=>{
+        if(err){
+            console.log("Error while fetching plants location",err);
+            result(null, err);
+        }else{
+            console.log("fetched successfully");
+            result(null, res);
+        }
+    })
+}
 
-//get plants by state by category
+PlantState.getAllPlantsByStateByCategory = (category, state, result) => {
+    const categoryMap = {
+        'COAL':'PLGENACL',
+        'OIL':'PLGENAOL',
+        'GAS':'PLGENAGS',
+        'NUCLEAR':'PLGENANC',
+        'HYDRO':'PLGENAHY',
+        'BIOMASS':'PLGENABM',
+        'WIND':'PLGENAWI',
+        'SOLAR':'PLGENASO',
+        'GEOTHERMAL':'PLGENAGT',
+        'OFSL':'PLGENAOF',
+        'OTHF':'PLGENAOP',
+        'RENEWABLE':'PLGENATN',
+        'NONRENEWABLE':'PLGENATR',
+        'NONHYDRO':'PLGENATH'
+    }
+    let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON,PLFUELCT, "+categoryMap[category]+" as val from plant_state WHERE PSTATABB=? and PLFUELCT=? order by "+categoryMap[category]+" desc";
+    dbConn.query(theQuery, [state,category], (err, res)=>{
+        if(err){
+            console.log("Error while fetching plants location",err);
+            result(null, err);
+        }else{
+            console.log("fetched successfully");
+            result(null, res);
+        }
+    })
+}
 
 //get top n plants by net generation
 PlantState.getTopPlantsByNetGeneration = (top, result) => {
     const topNetGeneration = {};
     
-    dbConn.query("select PNAME, PSTATABB, LAT, LON, PLGENACL as val from plant_state order by PLGENACL desc limit ?;  "+
-    "select PNAME, PSTATABB,LAT, LON , PLGENAOL as val from plant_state order by PLGENAOL desc limit ?;"+
-    "select PNAME, PSTATABB,LAT, LON , PLGENAGS as val from plant_state order by PLGENAGS desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENANC as val from plant_state order by PLGENANC desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENAHY as val from plant_state order by PLGENAHY desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENABM as val from plant_state order by PLGENABM desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENAWI as val from plant_state order by PLGENAWI desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENASO as val from plant_state order by PLGENASO desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENAGT as val from plant_state order by PLGENAGT desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENAOF as val from plant_state order by PLGENAOF desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENAOP as val from plant_state order by PLGENAOP desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENATN as val from plant_state order by PLGENATN desc limit ?;"+ 
-    "select PNAME, PSTATABB,LAT, LON , PLGENATR as val from plant_state order by PLGENATR desc limit ?;",
+    dbConn.query("select SEQPLT20,PNAME, PSTATABB, LAT, LON, PLGENACL as val from plant_state order by PLGENACL desc limit ?;  "+
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOL as val from plant_state order by PLGENAOL desc limit ?;"+
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAGS as val from plant_state order by PLGENAGS desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENANC as val from plant_state order by PLGENANC desc limit ?;"+ 
+    "select SEQPLT20, PNAME, PSTATABB,LAT, LON , PLGENAHY as val from plant_state order by PLGENAHY desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENABM as val from plant_state order by PLGENABM desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAWI as val from plant_state order by PLGENAWI desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENASO as val from plant_state order by PLGENASO desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAGT as val from plant_state order by PLGENAGT desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOF as val from plant_state order by PLGENAOF desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOP as val from plant_state order by PLGENAOP desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENATN as val from plant_state order by PLGENATN desc limit ?;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENATR as val from plant_state order by PLGENATR desc limit ?;",
     [parseInt(top),parseInt(top),
         parseInt(top),parseInt(top),
         parseInt(top),parseInt(top),
@@ -130,20 +187,19 @@ PlantState.getTopPlantsByNetGeneration = (top, result) => {
             console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            
-            topNetGeneration["coal"] = res[0];
-            topNetGeneration["oil"] = res[1];
-            topNetGeneration["gas"] = res[2];
-            topNetGeneration["nuclear"] = res[3];
-            topNetGeneration["hydro"] = res[4];
-            topNetGeneration["biomass"] = res[5];
-            topNetGeneration["wind"] = res[6];
-            topNetGeneration["solar"] = res[7];
-            topNetGeneration["geothermal"] = res[8];
-            topNetGeneration["fossil"] = res[9];
-            topNetGeneration["purchasedfuel"] = res[10];
-            topNetGeneration["nonrenewable"] = res[11];
-            topNetGeneration["renewable"] = res[12];
+            topNetGeneration["COAL"] = res[0];
+            topNetGeneration["OIL"] = res[1];
+            topNetGeneration["GAS"] = res[2];
+            topNetGeneration["NUCLEAR"] = res[3];
+            topNetGeneration["HYDRO"] = res[4];
+            topNetGeneration["BIOMASS"] = res[5];
+            topNetGeneration["WIND"] = res[6];
+            topNetGeneration["SOLAR"] = res[7];
+            topNetGeneration["GEOTHERMAL"] = res[8];
+            topNetGeneration["OFSL"] = res[9];
+            topNetGeneration["OTHF"] = res[10];
+            topNetGeneration["NONRENEWABLE"] = res[11];
+            topNetGeneration["RENEWABLE"] = res[12];
             console.log("fetched successfully",res);
             result(null, topNetGeneration);
         }
@@ -152,48 +208,65 @@ PlantState.getTopPlantsByNetGeneration = (top, result) => {
 }
 
 PlantState.getTopPlantsByNetGenerationByState = (state, top, result) => {
-    const topNetGeneration = {};
+    // const topNetGeneration = {};
+    // const categoryMap = {
+    //     'COAL':'PLGENACL',
+    //     'OIL':'PLGENAOL',
+    //     'GAS':'PLGENAGS',
+    //    'NUCLEAR':'PLGENANC',
+    //    'HYDRO':'PLGENAHY',
+    //    'BIOMASS':'PLGENABM',
+    //    'WIND':'PLGENAWI',
+    //    'SOLAR':'PLGENASO',
+    //    'GEOTHERMAL':'PLGENAGT',
+    //    'OFSL':'PLGENAOF',
+    //    'OTHF':'PLGENAOP',
+    //    'RENEWABLE':'PLGENATN',
+    //    'NONRENEWABLE':'PLGENATR',
+    //    'NONHYDRO':'PLGENATH'
+    // }
+    let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT from plant_state where PSTATABB=? limit ?";
     
-    dbConn.query("select PSTATABB as state, PLGENACL as val from plant_state where PSTATABB=? order by PLGENACL desc limit ?;  "+
-    "select PSTATABB ,LAT, LON , PLGENAOL as val from plant_state where PSTATABB=? order by PLGENAOL desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAGS as val from plant_state where PSTATABB=? order by PLGENAGS desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENANC as val from plant_state where PSTATABB=? order by PLGENANC desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAHY as val from plant_state where PSTATABB=? order by PLGENAHY desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENABM as val from plant_state where PSTATABB=? order by PLGENABM desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAWI as val from plant_state where PSTATABB=? order by PLGENAWI desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENASO as val from plant_state where PSTATABB=? order by PLGENASO desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAGT as val from plant_state where PSTATABB=? order by PLGENAGT desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAOF as val from plant_state where PSTATABB=? order by PLGENAOF desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENAOP as val from plant_state where PSTATABB=? order by PLGENAOP desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENATN as val from plant_state where PSTATABB=? order by PLGENATN desc limit ?;", 
-    "select PSTATABB ,LAT, LON , PLGENATR as val from plant_state where PSTATABB=? order by PLGENATR desc limit ?;", 
-    [state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),state,parseInt(top),
-        state,parseInt(top),
-    ] , (err, res)=>{
+    dbConn.query(theQuery, 
+    [state, parseInt(top)] , (err, res)=>{
+        if(err){
+            console.log("Error while fetching plants location",err);
+            result(null, err);
+        }else{
+            result(null, res);
+        }
+    });
+
+}
+
+PlantState.getTopPlantsByNetGenerationByCategory = (category, top, result) => {
+    const topNetGeneration = {};
+    const categoryMap = {
+        'COAL':'PLGENACL',
+        'OIL':'PLGENAOL',
+        'GAS':'PLGENAGS',
+       'NUCLEAR':'PLGENANC',
+       'HYDRO':'PLGENAHY',
+       'BIOMASS':'PLGENABM',
+       'WIND':'PLGENAWI',
+       'SOLAR':'PLGENASO',
+       'GEOTHERMAL':'PLGENAGT',
+       'OFSL':'PLGENAOF',
+       'OTHF':'PLGENAOP',
+       'RENEWABLE':'PLGENATN',
+       'NONRENEWABLE':'PLGENATR',
+       'NONHYDRO':'PLGENATH'
+    }
+    let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT, "+categoryMap[category]+" as val from plant_state order by "+categoryMap[category]+" desc limit ?";
+    
+    dbConn.query(theQuery, 
+    [parseInt(top)] , (err, res)=>{
         if(err){
             console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
             
-            topNetGeneration["coal"] = res[0];
-            topNetGeneration["oil"] = res[1];
-            topNetGeneration["gas"] = res[2];
-            topNetGeneration["nuclear"] = res[3];
-            topNetGeneration["hydro"] = res[4];
-            topNetGeneration["biomass"] = res[5];
-            topNetGeneration["wind"] = res[6];
-            topNetGeneration["solar"] = res[7];
-            topNetGeneration["geothermal"] = res[8];
-            topNetGeneration["fossil"] = res[9];
-            topNetGeneration["purchasedfuel"] = res[10];
-            topNetGeneration["nonrenewable"] = res[11];
-            topNetGeneration["renewable"] = res[12];
-            console.log("fetched successfully",res);
+            topNetGeneration[category] = res;
             result(null, topNetGeneration);
         }
     });
@@ -201,5 +274,48 @@ PlantState.getTopPlantsByNetGenerationByState = (state, top, result) => {
 }
 
 
+PlantState.getTopPlantsByNetGenerationByStateByCategory = (state, category, top, result) => {
+    const categoryMap = {
+        'COAL':'PLGENACL',
+        'OIL':'PLGENAOL',
+        'GAS':'PLGENAGS',
+       'NUCLEAR':'PLGENANC',
+       'HYDRO':'PLGENAHY',
+       'BIOMASS':'PLGENABM',
+       'WIND':'PLGENAWI',
+       'SOLAR':'PLGENASO',
+       'GEOTHERMAL':'PLGENAGT',
+       'OFSL':'PLGENAOF',
+       'OTHF':'PLGENAOP',
+       'RENEWABLE':'PLGENATN',
+       'NONRENEWABLE':'PLGENATR',
+       'NONHYDRO':'PLGENATH'
+    }
+    console.log('category', category)
+    let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON,PLFUELCT, "+categoryMap[category]+" as val from plant_state where PSTATABB=? and PLFUELCT=? order by "+categoryMap[category]+" desc limit ?";
+    dbConn.query(theQuery,
+    [state,category,parseInt(top)] , (err, res)=>{
+        if(err){
+            console.log("Error while fetching plants location",err);
+            result(null, err);
+        }else{
+            console.log("fetched successfully",res);
+            result(null, res);
+        }
+    });
+
+}
+
+PlantState.getPlantDetails = (id, result) => {
+    dbConn.query("SELECT * from plant_state where SEQPLT20 = ?",[parseInt(id)], (err, res)=>{
+        if(err){
+            console.log("Error while fetching states",err);
+            result(null, err);
+        }else{
+            console.log("fetched successfully");
+            result(null, res);
+        }
+    })
+}
 
 module.exports = PlantState;

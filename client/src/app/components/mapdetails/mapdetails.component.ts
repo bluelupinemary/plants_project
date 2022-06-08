@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
 import { PlantstateService } from 'src/app/services/plantstate.service';
 
 @Component({
@@ -7,7 +7,8 @@ import { PlantstateService } from 'src/app/services/plantstate.service';
   styleUrls: ['./mapdetails.component.css']
 })
 export class MapdetailsComponent implements OnInit {
-  generations: any = {};
+  @Input() plantId : any;
+  plantDetails: any;
   categoryFormList : any[] = [
     {
       "key":"BIOMASS","val": "Biomass"
@@ -54,12 +55,16 @@ export class MapdetailsComponent implements OnInit {
 
   constructor(private plantstateService: PlantstateService) { }
 
-  ngOnInit(): void {
-    this.plantstateService.getTopPlantsByNetGeneration(5).subscribe((generations)=>{
-      this.generations = generations;
-
-      console.log("generations", generations["coal"])
-    });
+  ngOnChanges():void {
+    if(this.plantId && this.plantId!==null && this.plantId !=''){
+        this.plantstateService.getPlantDetails(this.plantId).subscribe((plantDetails)=>{
+          this.plantDetails = plantDetails;
+        });
+    }
+   
   }
+
+  ngOnInit(): void {
+    }
 
 }

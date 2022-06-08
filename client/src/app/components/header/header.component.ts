@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators} from '@angular/forms';
 import { PlantstateService } from 'src/app/services/plantstate.service';
 
@@ -50,6 +50,9 @@ export class HeaderComponent implements OnInit {
     },
     {
       "key":"WIND","val": "Wind"
+    },
+    {
+      "key":"NONHYDRO","val": "NonHydro Renewable"
     }
   ]
 
@@ -135,17 +138,8 @@ export class HeaderComponent implements OnInit {
     return this.form.controls;
   }
 
-
-  // selectedGroup: any;
-
-  // getVal() {
-  //     console.log(this.selectedGroup); // returns selected object
-  //     console.log(this.selectedGroup.id); // returns selected option's id
-  //     console.log(this.selectedGroup.name); // returns selected option's name
-  // }
-  
   submitForm(){
-    console.log(this.form.value);
+    console.log("form submitted", this.form.value);
     // this.formSubmitValues = this.form.value;
     this.onSubmitValues.emit(this.form.value)
   }
