@@ -11,20 +11,20 @@
     overflow: hidden;
     padding: 0.5rem;
     box-shadow: 0 0 10px 5px #00000020;
-    margin-top:2rem;
 }
 
 .ol-popup {
     position: absolute;
-    background-color: white;
+    background: #E5F6EF;
     -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     padding: 15px;
     border-radius: 10px;
-    border: 1px solid #cccccc;
+    border: 1px solid #E5F6EF;
     bottom: 12px;
     left: -50px;
     min-width: 20rem;
+    font-weight: 600;
   }
   .ol-popup:after, .ol-popup:before {
     top: 100%;

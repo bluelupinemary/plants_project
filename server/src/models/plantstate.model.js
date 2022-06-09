@@ -61,26 +61,11 @@ var PlantState = (plantstate) => {
 }
 
 
-PlantState.getAllDistinctStates = (result) => {
-    dbConn.query("SELECT distinct PSTATABB from plant_state", (err, res)=>{
-        if(err){
-            console.log("Error while fetching states",err);
-            result(null, err);
-        }else{
-            console.log("fetched successfully");
-            result(null, res);
-        }
-    })
-}
-
 PlantState.getAllPlants = (result) => {
-    //select PNAME,PSTATABB, PLFUELCT, LAT, LON, PLGENACL, PLGENAOL,PLGENAGS,PLGENANC,PLGENAHY,PLGENABM,PLGENAWI,PLGENASO,PLGENAGT,PLGENAOF,PLGENAOP,PLGENATN,PLGENATR,PLGENATH from plant_state
     dbConn.query("select SEQPLT20, PNAME,PSTATABB, PLFUELCT, LAT, LON from plant_state", (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })
@@ -89,10 +74,8 @@ PlantState.getAllPlants = (result) => {
 PlantState.getAllPlantsByState = (state, result) => {
     dbConn.query("select SEQPLT20,PNAME,PSTATABB, LAT, LON,PLFUELCT from plant_state where PSTATABB = ? ", state, (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })
@@ -116,14 +99,10 @@ PlantState.getAllPlantsByCategory = (category, result) => {
        'NONRENEWABLE':'PLGENATR',
        'NONHYDRO':'PLGENATH'
     }
-    console.log('categorymap',category, categoryMap, categoryMap[category])
-    // let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT,"+categoryMap[category]+" as val from plant_state order by "+categoryMap[category]+" desc";
     dbConn.query("select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT,"+categoryMap[category]+" as val from plant_state where PLFUELCT = ? order by "+categoryMap[category]+" desc", [category], (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })
@@ -149,10 +128,8 @@ PlantState.getAllPlantsByStateByCategory = (category, state, result) => {
     let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON,PLFUELCT, "+categoryMap[category]+" as val from plant_state WHERE PSTATABB=? and PLFUELCT=? order by "+categoryMap[category]+" desc";
     dbConn.query(theQuery, [state,category], (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })
@@ -184,7 +161,6 @@ PlantState.getTopPlantsByNetGeneration = (top, result) => {
         parseInt(top)
     ] , (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
             topNetGeneration["COAL"] = res[0];
@@ -200,7 +176,6 @@ PlantState.getTopPlantsByNetGeneration = (top, result) => {
             topNetGeneration["OTHF"] = res[10];
             topNetGeneration["NONRENEWABLE"] = res[11];
             topNetGeneration["RENEWABLE"] = res[12];
-            console.log("fetched successfully",res);
             result(null, topNetGeneration);
         }
     });
@@ -208,29 +183,11 @@ PlantState.getTopPlantsByNetGeneration = (top, result) => {
 }
 
 PlantState.getTopPlantsByNetGenerationByState = (state, top, result) => {
-    // const topNetGeneration = {};
-    // const categoryMap = {
-    //     'COAL':'PLGENACL',
-    //     'OIL':'PLGENAOL',
-    //     'GAS':'PLGENAGS',
-    //    'NUCLEAR':'PLGENANC',
-    //    'HYDRO':'PLGENAHY',
-    //    'BIOMASS':'PLGENABM',
-    //    'WIND':'PLGENAWI',
-    //    'SOLAR':'PLGENASO',
-    //    'GEOTHERMAL':'PLGENAGT',
-    //    'OFSL':'PLGENAOF',
-    //    'OTHF':'PLGENAOP',
-    //    'RENEWABLE':'PLGENATN',
-    //    'NONRENEWABLE':'PLGENATR',
-    //    'NONHYDRO':'PLGENATH'
-    // }
     let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT from plant_state where PSTATABB=? limit ?";
     
     dbConn.query(theQuery, 
     [state, parseInt(top)] , (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
             result(null, res);
@@ -262,7 +219,6 @@ PlantState.getTopPlantsByNetGenerationByCategory = (category, top, result) => {
     dbConn.query(theQuery, 
     [parseInt(top)] , (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
             
@@ -291,15 +247,12 @@ PlantState.getTopPlantsByNetGenerationByStateByCategory = (state, category, top,
        'NONRENEWABLE':'PLGENATR',
        'NONHYDRO':'PLGENATH'
     }
-    console.log('category', category)
     let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON,PLFUELCT, "+categoryMap[category]+" as val from plant_state where PSTATABB=? and PLFUELCT=? order by "+categoryMap[category]+" desc limit ?";
     dbConn.query(theQuery,
     [state,category,parseInt(top)] , (err, res)=>{
         if(err){
-            console.log("Error while fetching plants location",err);
             result(null, err);
         }else{
-            console.log("fetched successfully",res);
             result(null, res);
         }
     });
@@ -307,16 +260,10 @@ PlantState.getTopPlantsByNetGenerationByStateByCategory = (state, category, top,
 }
 
 PlantState.getPlantDetails = (id, result) => {
-    // let theQuery;
-    // if(type === 'net') theQuery = "SELECT SEQPLT20,PLGENACL,PLGENAOL,PLGENAGS,PLGENANC,PLGENAHY,PLGENABM,PLGENAWI,PLGENASO,PLGENAGT,PLGENAOF,PLGENAOP,PLGENATN,PLGENATR,PLGENATH,PLGENACY, PLGENACN from plant_state where SEQPLT20 = ?";
-    // else if(type === 'percent')  theQuery = "SELECT SEQPLT20,PLCLPR, PLOLPR, PLGSPR,PLNCPR,PLHYPR,PLBMPR,PLWIPR,PLSOPR,PLGTPR,PLOFPR,PLOPPR,PLTNPR,PLTRPR,PLTHPR,PLCYPR ,PLCNPR from plant_state where SEQPLT20 = ?";
-    // else theQ
     dbConn.query("SELECT * from plant_state where SEQPLT20 = ?",[parseInt(id)], (err, res)=>{
         if(err){
-            console.log("Error while fetching states",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })
@@ -328,10 +275,8 @@ PlantState.getPlantDetailsByType = (id,type, result) => {
     else if(type === 'percent')  theQuery = "SELECT PLCLPR, PLOLPR, PLGSPR,PLNCPR,PLHYPR,PLBMPR,PLWIPR,PLSOPR,PLGTPR,PLOFPR,PLOPPR,PLTNPR,PLTRPR,PLTHPR,PLCYPR ,PLCNPR from plant_state where SEQPLT20 = ?";
     dbConn.query(theQuery,[parseInt(id)], (err, res)=>{
         if(err){
-            console.log("Error while fetching states",err);
             result(null, err);
         }else{
-            console.log("fetched successfully");
             result(null, res);
         }
     })

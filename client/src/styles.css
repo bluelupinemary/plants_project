@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 body{
-    background: rgb(49,231,107);
-    background: linear-gradient(180deg, rgba(49,231,107,1) 0%, #26b366 100%);
+    background: #31e76b;
+    background: linear-gradient(180deg, #31e76b 0%, #26b366 100%);
     margin:0;
     overflow-x: hidden;
     color: #4D4A5C;
@@ -23,7 +23,7 @@ body{
     box-shadow: 0 0 10px 3px #00000010;
     border-radius: 15px;
     margin-top: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     padding: 1rem 0;
     display: flex;
     align-items: center;

@@ -1,19 +1,8 @@
 const PlantStateModel = require("../models/plantstate.model");
 
-exports.getStatesList = (req, res) => {
-    PlantStateModel.getAllDistinctStates((err, distinctStates) => {
-        // console.log("all plant state",distinctStates)
-        if(err){
-            res.send(err);
-        }else{
-            res.send(distinctStates)
-        }
-    })
-}
 
 exports.getPlantsList = (req, res) => {
     PlantStateModel.getAllPlants((err, plantLocations) => {
-        // console.log("all plant locations",plantLocations)
         if(err){
             res.send(err);
         }else{
@@ -24,7 +13,6 @@ exports.getPlantsList = (req, res) => {
 
 exports.getPlantsByStateList = (req, res) => {
     PlantStateModel.getAllPlantsByState(req.params.state, (err, plantsByState) => {
-        // console.log("all plant locations",plantsByState)
         if(err){
             res.send(err);
         }else{
@@ -35,7 +23,6 @@ exports.getPlantsByStateList = (req, res) => {
 
 exports.getPlantsByCategoryList= (req, res) => {
     PlantStateModel.getAllPlantsByCategory(req.params.category, (err, plantsByCategory) => {
-        // console.log("all plant locations",plantsByCategory)
         if(err){
             res.send(err);
         }else{

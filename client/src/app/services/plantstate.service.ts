@@ -15,6 +15,10 @@ export class PlantstateService {
     return this.http.get(`${this.baseUrl}/`);
   }
 
+  getStateDetails(code:string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/${code}`);
+  }
+
   getAllPlants(): Observable<any>{
     return this.http.get(`${this.baseUrl}/plants`);
   }

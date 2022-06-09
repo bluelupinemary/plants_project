@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   @Output() hasCategory: boolean = false;
   @Output() topN : any;
   @Output() plantId : any;
+  @Output() selectedState: any;
 
   constructor(private plantstateService : PlantstateService) { }
 
@@ -84,17 +85,17 @@ export class DashboardComponent implements OnInit {
   }
 
   getTopNPlantsByStateByCategory(state:string, category:string, n:any){
-    console.log(state, category, n)
     n = parseInt(n);
     this.plantstateService.getTopPlantsByNetGenerationByStateByCategory(state,category,n).subscribe((plants)=>{
       this.plants = plants;
-      console.log('plants after fetch', this.plants)
       this.isFiltered = true;
       this.hasState = true;
       this.topN = n;
     })  
   }
 
+
+  //once header form is submitted
   onHeaderSubmitValues(formValues:any){
     if(formValues.topNForm!=='' && formValues.topNForm!==null){
       if(formValues.stateForm!=='' && formValues.stateForm!==null && formValues.stateForm!=='null'){
@@ -111,7 +112,6 @@ export class DashboardComponent implements OnInit {
         }
       }
     }else{
-      
       if(formValues.stateForm!=='' && formValues.stateForm!==null   && formValues.stateForm!=='null'){
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null   && formValues.categoryForm!=='null'){
           this.getAllPlantsByStateByCategory(formValues.categoryForm,formValues.stateForm)
@@ -127,6 +127,12 @@ export class DashboardComponent implements OnInit {
       }
     }
     this.isFiltered = true;
+
+    if(formValues.stateForm!=='' && formValues.stateForm!==null && formValues.stateForm!=='null'){
+      this.selectedState = formValues.stateForm;
+    }else{
+      this.selectedState = '';
+    }
   }
 
 

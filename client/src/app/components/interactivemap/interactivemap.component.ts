@@ -1,23 +1,18 @@
-import { Component, OnInit, ElementRef, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit,Input, Output, EventEmitter } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import {Vector as VectorLayer} from 'ol/layer';
 import Style from 'ol/style/Style';
-import Icon from 'ol/style/Icon';
 import OSM from 'ol/source/OSM';
 import * as olProj from 'ol/proj';
 import TileLayer from 'ol/layer/Tile';
 import { PlantstateService } from 'src/app/services/plantstate.service';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
-import {Fill, IconImage, Stroke} from 'ol/style';
-import {Circle, Point} from 'ol/geom';
-import { useGeographic } from 'ol/proj';
-import { Color } from 'ol/color';
-import { map } from 'rxjs';
-import { getLocaleDayPeriods } from '@angular/common';
+import {Fill, Stroke} from 'ol/style';
+import {Circle} from 'ol/geom';
 import Overlay from 'ol/Overlay';
-import CircleStyle from 'ol/style/Circle';
+import {Control, defaults as defaultControls} from 'ol/control';
 
 @Component({
   selector: 'app-interactivemap',
@@ -32,12 +27,11 @@ export class InteractivemapComponent implements OnInit {
   @Input() hasState:boolean;
   @Input() hasCategory:boolean;
   @Input() topN:any;
+  @Input() selectedState:any = [];
   @Output() onPlantMarkerClick = new EventEmitter();
   isFetchDone : boolean = false;
   map : Map;
-  circleFeature : any;
   vectorSource : any;
-
   plantIconsFeatures : any[] = [];
   categoryColorMap : any = {
     "WIND":"rgba(245, 39, 145, 0.75)",
@@ -52,15 +46,15 @@ export class InteractivemapComponent implements OnInit {
     "NUCLEAR": "rgba(255, 109, 0, 0.75)",
     "GEOTHERMAL": "rgba(149, 85, 38, 0.75)",
   }
+  currStateCoords : any;
 
   constructor(private plantstateService: PlantstateService) { }
 
+  //function to handle map reloading when filter is used
   ngOnChanges(): void{
-    console.log(this.topN, "in child");
     if(this.isFiltered){
+      if(this.selectedState!=='' && this.selectedState!==undefined) this.getStateLatLon();
       if(this.topN && this.topN > 0){
-        console.log('redraw map now')
-        
         if(this.hasState) this.reInitMap();
         else this.redrawMap();
       }
@@ -70,21 +64,25 @@ export class InteractivemapComponent implements OnInit {
     }else{
       this.generateMap();
     }
-    
-    // 
   }
 
   ngOnInit(): void {
   }
 
+  getStateLatLon(){
+    this.plantstateService.getStateDetails(this.selectedState).subscribe((state)=>{
+      this.currStateCoords = [parseFloat(state[0].lon),parseFloat(state[0].lat)]
+    })
+  }
+
+  //reinit map for when category and state is selected
   reInitMap(){
-      console.log('reinitMap here', this.plants)
+
       this.vectorSource.refresh();
       this.plantIconsFeatures = [];
 
       this.plants.forEach((plant) => {
         const plantIcon = new Feature({
-          //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
           geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
           name:plant.PNAME,
           state: plant.PSTATABB,
@@ -97,12 +95,6 @@ export class InteractivemapComponent implements OnInit {
         
         plantIcon.setStyle(
           new Style({
-          //  image: new Icon(({
-          //    color: '#ffffff',
-          //    crossOrigin: 'anonymous',
-          //    src: '../../../assets/power-plant-icon.svg',
-          //    imgSize: [25,25]
-          //  }))
           fill: new Fill({
             color: setColor,
           }),
@@ -116,22 +108,29 @@ export class InteractivemapComponent implements OnInit {
         this.plantIconsFeatures.push(plantIcon);
       })
       
-
       this.vectorSource.addFeatures(this.plantIconsFeatures)
+
+      setTimeout(()=>{
+        if(this.selectedState) {
+          this.map.getView().setCenter(olProj.fromLonLat(this.currStateCoords));
+          this.map.getView().setZoom(6);
+        }else{
+          this.map.getView().setCenter(olProj.fromLonLat([-95,35]));
+          this.map.getView().setZoom(4.5);
+        }
+      },200)
 
   }
 
+  //redraw map whenever user uses the filters
   redrawMap(){
     if(this.isFiltered){
-      console.log('redrawing here')
       this.vectorSource.refresh();
       this.plantIconsFeatures = [];
       
       Object.keys(this.plants).forEach((category:any)=>{
-        
         this.plants[category].forEach((plant:any)=>{
           const plantIcon2 = new Feature({
-            //  geometry: new Point(olProj.fromLonLat([plant['LON'],plant['LAT']]))
             geometry: new Circle(olProj.fromLonLat([plant['LON'],plant['LAT']]), 15000),
             name:plant.PNAME,
             state: plant.PSTATABB,
@@ -142,12 +141,6 @@ export class InteractivemapComponent implements OnInit {
           let setColor = (category !== "" && this.categoryColorMap[category.toUpperCase()]) ? this.categoryColorMap[category.toUpperCase()] : "#DAA52080";
           plantIcon2.setStyle(
             new Style({
-            //  image: new Icon(({
-            //    color: '#ffffff',
-            //    crossOrigin: 'anonymous',
-            //    src: '../../../assets/power-plant-icon.svg',
-            //    imgSize: [25,25]
-            //  }))
             fill: new Fill({
               color: setColor,
             }),
@@ -162,10 +155,10 @@ export class InteractivemapComponent implements OnInit {
 
       })
       this.vectorSource.addFeatures(this.plantIconsFeatures)
-
     }
   }
 
+  //if filter is not used/ initial map generation 
   generateMap(){
     const container = (<HTMLInputElement>document.getElementById("popup"));
     const content = (<HTMLInputElement>document.getElementById('popup-content'));
@@ -190,19 +183,11 @@ export class InteractivemapComponent implements OnInit {
           category:plant.PLFUELCT,
           id:plant.SEQPLT20
         });
-      
-  
+    
         let setColor = plant['PLFUELCT'] !== "" ? this.categoryColorMap[plant['PLFUELCT']] : "rgba(255,0,0,0.5)";
         
         plantIcon.setStyle(
           new Style({
-        
-          //  image: new Icon(({
-          //    color: '#ffffff',
-          //    crossOrigin: 'anonymous',
-          //    src: '../../../assets/power-plant-icon.svg',
-          //    imgSize: [25,25]
-          //  }))
           fill: new Fill({
             color: setColor,
           }),
@@ -229,6 +214,7 @@ export class InteractivemapComponent implements OnInit {
     
     this.map = new Map({
       target: 'us-map',
+      controls: defaultControls({ attribution: false }),
       layers: [
         new TileLayer({
           source: new OSM()
@@ -242,6 +228,7 @@ export class InteractivemapComponent implements OnInit {
     });
 
     this.map.addLayer(vectorLayer);
+      
 
 
 
@@ -254,10 +241,8 @@ export class InteractivemapComponent implements OnInit {
       const pixel = this.map.getEventPixel(evt.originalEvent);
       const hit = this.map.hasFeatureAtPixel(pixel);
       
-      console.log(evt, pixel, hit)
       if(hit){
         this.map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-          // do something
           content.innerHTML = '<div class="popup-wrapper">'+
           'Plant ID: <span class="plant-id">'+feature.get('id')+'</span><br/>'+
           'Plant Name: <span class="plant-name">'+feature.get('name')+'</span><br/>'+
@@ -265,17 +250,14 @@ export class InteractivemapComponent implements OnInit {
           'Category: <span class="plant-category">'+feature.get('category')+'</span>'+
           '</div>';
           this.mapMarkerClick(feature.get('id'))
-
+          this.map.getView().setCenter(coordinate);
         });
         
         overlay.setPosition(coordinate);
-
-        console.log('hit')
       }else{
         overlay.setPosition(undefined);
         closer.blur();
       }
-
      
     });
 
@@ -288,9 +270,8 @@ export class InteractivemapComponent implements OnInit {
 
   }
 
+  //when user clicks map Marker, related to showing graphs
   mapMarkerClick(plantId:any){
-    console.log("marker is clicked");
-    // this.formSubmitValues = this.form.value;
     this.onPlantMarkerClick.emit(plantId)
   }
 
