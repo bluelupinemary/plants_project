@@ -33,7 +33,6 @@ exports.getPlantsByCategoryList= (req, res) => {
 
 exports.getPlantsByStateByCategoryList = (req, res) => {
     PlantStateModel.getAllPlantsByStateByCategory(req.params.category,req.params.state, (err, plantsByStateByCategory) => {
-        // console.log("all plant locations",plantsByStateByCategory)
         if(err){
             res.send(err);
         }else{
@@ -43,8 +42,7 @@ exports.getPlantsByStateByCategoryList = (req, res) => {
 }
 
 exports.getTopPlantsByNetGenerationList = (req, res) => {
-    PlantStateModel.getTopPlantsByNetGeneration(req.params.top, (err, topNetGenerationPlants) => {
-        // console.log("top n plants by net generation",topNetGenerationPlants)
+    PlantStateModel.getTopPlantsByNetGeneration((err, topNetGenerationPlants) => {
         if(err){
             res.send(err);
         }else{
@@ -55,7 +53,6 @@ exports.getTopPlantsByNetGenerationList = (req, res) => {
 
 exports.getTopPlantsByNetGenerationByStateList = (req, res) => {
     PlantStateModel.getTopPlantsByNetGenerationByState( req.params.state,req.params.top, (err, topNetGenerationPlantsByState) => {
-        // console.log("top n plants by net generation",topNetGenerationPlantsByState)
         if(err){
             res.send(err);
         }else{
@@ -66,7 +63,6 @@ exports.getTopPlantsByNetGenerationByStateList = (req, res) => {
 
 exports.getTopPlantsByNetGenerationByCategoryList = (req, res) => {
     PlantStateModel.getTopPlantsByNetGenerationByCategory( req.params.category,req.params.top, (err, topNetGenerationPlantsByCategory) => {
-        // console.log("top n plants by net generation",topNetGenerationPlantsByCategory)
         if(err){
             res.send(err);
         }else{
@@ -77,7 +73,6 @@ exports.getTopPlantsByNetGenerationByCategoryList = (req, res) => {
 
 exports.getTopPlantsByNetGenerationByStateByCategoryList = (req, res) => {
     PlantStateModel.getTopPlantsByNetGenerationByStateByCategory(req.params.state,req.params.category, req.params.top, (err, topNetGenerationPlantsByStateByCategory) => {
-        console.log("top n plants by net generation by state by category",topNetGenerationPlantsByStateByCategory)
         if(err){
             res.send(err);
         }else{

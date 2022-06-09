@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { PlantstateService } from 'src/app/services/plantstate.service';
+import { Component, OnInit, Input,Output } from '@angular/core';
 
 @Component({
   selector: 'app-topranking',
@@ -7,12 +6,18 @@ import { PlantstateService } from 'src/app/services/plantstate.service';
   styleUrls: ['./topranking.component.css']
 })
 export class ToprankingComponent implements OnInit {
+  @Input() plants : any;
+  plantsData : any;
+  title : string = 'Top N Plants Net Generation Details';
 
-  constructor(private plantstateService : PlantstateService) { }
+  constructor() { }
+
+  ngOnChanges(): void {
+    this.plantsData = this.plants;
+  }
 
   ngOnInit(): void {
 
-    
   }
 
 }

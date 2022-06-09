@@ -16,13 +16,21 @@ export class DashboardComponent implements OnInit {
   @Output() topN : any;
   @Output() plantId : any;
   @Output() selectedState: any;
+  @Output() isShowTopRanking: boolean = false;
+  topPlantsSorted : any[];
 
   constructor(private plantstateService : PlantstateService) { }
 
   ngOnInit(): void {
     this.plantstateService.getAllPlants().subscribe((plants)=>{
       this.plants = plants;
-    })    
+    });
+
+    this.plantstateService.getTopPlantsByNetGeneration().subscribe((topPlantsSorted)=>{
+      this.topPlantsSorted = topPlantsSorted;
+    });
+
+    
   }
 
   ngOnChange(): void {
@@ -33,7 +41,8 @@ export class DashboardComponent implements OnInit {
     this.plantstateService.getAllPlants().subscribe((plants)=>{
       this.plants = plants;
       this.topN = null;
-
+      this.hasState = false;
+      this.hasCategory = false;
     }) 
   }
 
@@ -59,12 +68,14 @@ export class DashboardComponent implements OnInit {
     })  
   }
 
-  getTopNPlants(n:number){
-    this.plantstateService.getTopPlantsByNetGeneration(n).subscribe((plants)=>{
-      this.plants = plants;
+  getTopNPlants(n:any){
+    n = parseInt(n);
+    if(n < this.topPlantsSorted.length){
+      this.plants = this.topPlantsSorted.slice(0,n);
       this.isFiltered = true;
       this.topN = n;
-    })  
+      this.isShowTopRanking = true;
+    }
   }
 
   getTopNPlantsByState(state:string, n:any){
@@ -73,14 +84,17 @@ export class DashboardComponent implements OnInit {
       this.isFiltered = true;
       this.hasState = true;
       this.topN = n;
+      this.isShowTopRanking = false;
     })  
   }
 
   getTopNPlantsByCategory(category:string, n:any){
     this.plantstateService.getTopPlantsByNetGenerationByCategory(category, n).subscribe((plants)=>{
       this.plants = plants;
+      this.hasCategory = true;
       this.isFiltered = true;
       this.topN = n;
+      this.isShowTopRanking = false;
     })  
   }
 
@@ -91,6 +105,7 @@ export class DashboardComponent implements OnInit {
       this.isFiltered = true;
       this.hasState = true;
       this.topN = n;
+      this.isShowTopRanking = false;
     })  
   }
 
@@ -112,6 +127,7 @@ export class DashboardComponent implements OnInit {
         }
       }
     }else{
+        this.isShowTopRanking = false;
       if(formValues.stateForm!=='' && formValues.stateForm!==null   && formValues.stateForm!=='null'){
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null   && formValues.categoryForm!=='null'){
           this.getAllPlantsByStateByCategory(formValues.categoryForm,formValues.stateForm)

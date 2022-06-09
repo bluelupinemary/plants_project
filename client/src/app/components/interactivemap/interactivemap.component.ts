@@ -55,8 +55,8 @@ export class InteractivemapComponent implements OnInit {
     if(this.isFiltered){
       if(this.selectedState!=='' && this.selectedState!==undefined) this.getStateLatLon();
       if(this.topN && this.topN > 0){
-        if(this.hasState) this.reInitMap();
-        else this.redrawMap();
+        if(this.hasCategory) this.redrawMap();
+        else this.reInitMap();
       }
       else{
         this.reInitMap();
@@ -77,7 +77,6 @@ export class InteractivemapComponent implements OnInit {
 
   //reinit map for when category and state is selected
   reInitMap(){
-
       this.vectorSource.refresh();
       this.plantIconsFeatures = [];
 
@@ -122,7 +121,7 @@ export class InteractivemapComponent implements OnInit {
 
   }
 
-  //redraw map whenever user uses the filters
+  //redraw map whenever user uses the filters with category selected
   redrawMap(){
     if(this.isFiltered){
       this.vectorSource.refresh();

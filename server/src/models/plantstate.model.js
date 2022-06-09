@@ -135,48 +135,76 @@ PlantState.getAllPlantsByStateByCategory = (category, state, result) => {
     })
 }
 
+
 //get top n plants by net generation
-PlantState.getTopPlantsByNetGeneration = (top, result) => {
-    const topNetGeneration = {};
+function swap(items, leftIndex, rightIndex){
+    var temp = items[leftIndex];
+    items[leftIndex] = items[rightIndex];
+    items[rightIndex] = temp;
+}
+
+function partition(items, left, right) {
+    var pivot   = items[Math.floor((right + left) / 2)].val, //middle element
+        i       = left, //left pointer
+        j       = right; //right pointer
+    while (i <= j) {
+        while (items[i].val > pivot) {
+            i++;
+        }
+        while (items[j].val < pivot) {
+            j--;
+        }
+        if (i <= j) {
+            swap(items, i, j); //swap two elements
+            i++;
+            j--;
+        }
+    }
+    return i;
+}
+
+function quickSort(items, left, right) {
+    var index;
+    if (items.length > 1) {
+        index = partition(items, left, right); //index returned from partition
+        if (left < index - 1) { //more elements on the left side of the pivot
+            quickSort(items, left, index - 1);
+        }
+        if (index < right) { //more elements on the right side of the pivot
+            quickSort(items, index, right);
+        }
+    }
+    return items;
+}
+
+
+
+PlantState.getTopPlantsByNetGeneration = (result) => {
+    const mergedArr = [];
     
-    dbConn.query("select SEQPLT20,PNAME, PSTATABB, LAT, LON, PLGENACL as val from plant_state order by PLGENACL desc limit ?;  "+
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOL as val from plant_state order by PLGENAOL desc limit ?;"+
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAGS as val from plant_state order by PLGENAGS desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENANC as val from plant_state order by PLGENANC desc limit ?;"+ 
-    "select SEQPLT20, PNAME, PSTATABB,LAT, LON , PLGENAHY as val from plant_state order by PLGENAHY desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENABM as val from plant_state order by PLGENABM desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAWI as val from plant_state order by PLGENAWI desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENASO as val from plant_state order by PLGENASO desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAGT as val from plant_state order by PLGENAGT desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOF as val from plant_state order by PLGENAOF desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENAOP as val from plant_state order by PLGENAOP desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENATN as val from plant_state order by PLGENATN desc limit ?;"+ 
-    "select SEQPLT20,PNAME, PSTATABB,LAT, LON , PLGENATR as val from plant_state order by PLGENATR desc limit ?;",
-    [parseInt(top),parseInt(top),
-        parseInt(top),parseInt(top),
-        parseInt(top),parseInt(top),
-        parseInt(top),parseInt(top),
-        parseInt(top),parseInt(top),
-        parseInt(top),parseInt(top),
-        parseInt(top)
+    dbConn.query("select SEQPLT20,PNAME, PSTATABB, LAT, LON, PLFUELCT, PLGENACL as val, PLCLPR as percent from plant_state where PLGENACL > 0 order by PLGENACL desc;  "+
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAOL as val,PLOLPR as percent from plant_state where PLGENAOL > 0 order by PLGENAOL desc;"+
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAGS as val,PLGSPR as percent from plant_state where PLGENAGS > 0 order by PLGENAGS desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENANC as val,PLNCPR  as percent from plant_state where PLGENANC > 0 order by PLGENANC desc;"+ 
+    "select SEQPLT20, PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAHY as val,PLHYPR as percent from plant_state where PLGENAHY > 0 order by PLGENAHY desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENABM as val,PLBMPR as percent from plant_state where PLGENABM > 0 order by PLGENABM desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAWI as val,PLWIPR as percent from plant_state where PLGENAWI > 0 order by PLGENAWI desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENASO as val,PLSOPR as percent from plant_state where PLGENASO > 0 order by PLGENASO desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAGT as val,PLGTPR as percent from plant_state where PLGENAGT > 0 order by PLGENAGT desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAOF as val,PLOFPR as percent from plant_state where PLGENAOF > 0 order by PLGENAOF desc;"+ 
+    "select SEQPLT20,PNAME, PSTATABB,LAT, LON, PLFUELCT, PLGENAOP as val,PLOPPR as percent from plant_state where PLGENAOP > 0 order by PLGENAOP desc;",
+    [
     ] , (err, res)=>{
         if(err){
             result(null, err);
         }else{
-            topNetGeneration["COAL"] = res[0];
-            topNetGeneration["OIL"] = res[1];
-            topNetGeneration["GAS"] = res[2];
-            topNetGeneration["NUCLEAR"] = res[3];
-            topNetGeneration["HYDRO"] = res[4];
-            topNetGeneration["BIOMASS"] = res[5];
-            topNetGeneration["WIND"] = res[6];
-            topNetGeneration["SOLAR"] = res[7];
-            topNetGeneration["GEOTHERMAL"] = res[8];
-            topNetGeneration["OFSL"] = res[9];
-            topNetGeneration["OTHF"] = res[10];
-            topNetGeneration["NONRENEWABLE"] = res[11];
-            topNetGeneration["RENEWABLE"] = res[12];
-            result(null, topNetGeneration);
+            //make one merged array from arrays
+            for(i=0;i<res.length;i++){
+                mergedArr.push(...res[i]);
+            }
+            //sort the merged array to descending order
+            var sortedPlants = quickSort(mergedArr, 0, mergedArr.length - 1)
+            result(null, sortedPlants);
         }
     });
 
@@ -212,7 +240,7 @@ PlantState.getTopPlantsByNetGenerationByCategory = (category, top, result) => {
        'OTHF':'PLGENAOP',
        'RENEWABLE':'PLGENATN',
        'NONRENEWABLE':'PLGENATR',
-       'NONHYDRO':'PLGENATH'
+       'NONHYDRO':'PLGENATH',
     }
     let theQuery = "select SEQPLT20,PSTATABB,PNAME,LAT,LON, PLFUELCT, "+categoryMap[category]+" as val from plant_state order by "+categoryMap[category]+" desc limit ?";
     

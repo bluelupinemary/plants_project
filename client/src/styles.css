@@ -6,7 +6,18 @@ body{
     overflow-x: hidden;
     color: #4D4A5C;
     font-family: 'Roboto Condensed', sans-serif !important;
+    scrollbar-width: thin;
+    scrollbar-color: #26B975 #010D4B30;
 }
+
+body::-webkit-scrollbar-thumb {
+    background-color: #26B975;
+}
+  
+body::-webkit-scrollbar-track {
+    background: #010D4B30;
+}
+  
 
 .section{
     padding-left: 2rem;

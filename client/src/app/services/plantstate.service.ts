@@ -35,9 +35,8 @@ export class PlantstateService {
     return this.http.get(`${this.baseUrl}/plants/${state}/${category}`);
   }
 
-  getTopPlantsByNetGeneration(n : number): Observable<any>{
-    // return this.http.get(`${this.baseUrl}/plants/${state.code}`);
-    return this.http.get(`${this.baseUrl}/generation/${n}`);
+  getTopPlantsByNetGeneration(): Observable<any>{
+    return this.http.get(`${this.baseUrl}/generation/top`);
   }
 
   getTopPlantsByNetGenerationByState(state: string,n : number): Observable<any>{

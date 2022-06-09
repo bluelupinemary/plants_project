@@ -45,7 +45,6 @@ export class PercentageDetailsComponent implements OnInit {
     "PLTHPR": "NonHydro Renwbls %",
     "PLCYPR": "Combustion %",
     "PLCNPR": "Non-Combustion %"
-
   }
 
 

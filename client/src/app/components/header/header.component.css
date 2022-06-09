@@ -51,6 +51,10 @@ input, select{
     font-weight: 500;
 }
 
+.reset-fields-btn{
+    border-radius: 30px;
+}
+
 
 @media(min-width: 992px){
     .header-bar{

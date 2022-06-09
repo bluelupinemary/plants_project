@@ -15,6 +15,7 @@ import { ToprankingComponent } from './components/topranking/topranking.componen
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { NetGenerationDetailsComponent } from './components/net-generation-details/net-generation-details.component';
 import { PercentageDetailsComponent } from './components/percentage-details/percentage-details.component';
+import { FeaturedPlantsComponent } from './components/featured-plants/featured-plants.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { PercentageDetailsComponent } from './components/percentage-details/perc
     ToprankingComponent,
     DashboardComponent,
     NetGenerationDetailsComponent,
-    PercentageDetailsComponent
+    PercentageDetailsComponent,
+    FeaturedPlantsComponent
   ],
   imports: [
     BrowserModule,

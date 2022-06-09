@@ -4,7 +4,7 @@ const router = express.Router();
 const plantStateController = require('../controllers/plantstate.controller');
 const statesController = require('../controllers/states.controller');
 
-router.get('/generation/:top', plantStateController.getTopPlantsByNetGenerationList);
+router.get('/generation/top', plantStateController.getTopPlantsByNetGenerationList);
 router.get('/generation/:top/:state', plantStateController.getTopPlantsByNetGenerationByStateList);
 router.get('/generation/:top/all/:category', plantStateController.getTopPlantsByNetGenerationByCategoryList);
 router.get('/generation/:top/:state/:category', plantStateController.getTopPlantsByNetGenerationByStateByCategoryList);
