@@ -307,7 +307,26 @@ PlantState.getTopPlantsByNetGenerationByStateByCategory = (state, category, top,
 }
 
 PlantState.getPlantDetails = (id, result) => {
+    // let theQuery;
+    // if(type === 'net') theQuery = "SELECT SEQPLT20,PLGENACL,PLGENAOL,PLGENAGS,PLGENANC,PLGENAHY,PLGENABM,PLGENAWI,PLGENASO,PLGENAGT,PLGENAOF,PLGENAOP,PLGENATN,PLGENATR,PLGENATH,PLGENACY, PLGENACN from plant_state where SEQPLT20 = ?";
+    // else if(type === 'percent')  theQuery = "SELECT SEQPLT20,PLCLPR, PLOLPR, PLGSPR,PLNCPR,PLHYPR,PLBMPR,PLWIPR,PLSOPR,PLGTPR,PLOFPR,PLOPPR,PLTNPR,PLTRPR,PLTHPR,PLCYPR ,PLCNPR from plant_state where SEQPLT20 = ?";
+    // else theQ
     dbConn.query("SELECT * from plant_state where SEQPLT20 = ?",[parseInt(id)], (err, res)=>{
+        if(err){
+            console.log("Error while fetching states",err);
+            result(null, err);
+        }else{
+            console.log("fetched successfully");
+            result(null, res);
+        }
+    })
+}
+
+PlantState.getPlantDetailsByType = (id,type, result) => {
+    let theQuery;
+    if(type === 'net') theQuery = "SELECT PLGENACL,PLGENAOL,PLGENAGS,PLGENANC,PLGENAHY,PLGENABM,PLGENAWI,PLGENASO,PLGENAGT,PLGENAOF,PLGENAOP,PLGENATN,PLGENATR,PLGENATH,PLGENACY, PLGENACN from plant_state where SEQPLT20 = ?";
+    else if(type === 'percent')  theQuery = "SELECT PLCLPR, PLOLPR, PLGSPR,PLNCPR,PLHYPR,PLBMPR,PLWIPR,PLSOPR,PLGTPR,PLOFPR,PLOPPR,PLTNPR,PLTRPR,PLTHPR,PLCYPR ,PLCNPR from plant_state where SEQPLT20 = ?";
+    dbConn.query(theQuery,[parseInt(id)], (err, res)=>{
         if(err){
             console.log("Error while fetching states",err);
             result(null, err);

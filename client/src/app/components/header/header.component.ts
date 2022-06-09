@@ -114,8 +114,7 @@ export class HeaderComponent implements OnInit {
     }
   
      this.plantstateService.getAllStates().subscribe((states)=>{
-      // this.stateFormList = states;      
-      // console.log(states)
+
       states.forEach((state:any)=>{
         let code = state['PSTATABB'];
         let data = {
@@ -129,7 +128,7 @@ export class HeaderComponent implements OnInit {
 
   
   form = new FormGroup({
-    stateForm: new FormControl('', Validators.required),
+    stateForm: new FormControl(),
     categoryForm: new FormControl(),
     topNForm: new FormControl()
   });
@@ -139,8 +138,6 @@ export class HeaderComponent implements OnInit {
   }
 
   submitForm(){
-    console.log("form submitted", this.form.value);
-    // this.formSubmitValues = this.form.value;
     this.onSubmitValues.emit(this.form.value)
   }
 

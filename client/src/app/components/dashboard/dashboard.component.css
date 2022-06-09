@@ -1,22 +1,22 @@
 .page-title{
-    font-size: 3rem;
-    color: #ffffff;
-    text-align: center;
-    margin: 2rem 0 2rem;
+    font-size: 2.5rem;
+    color: #4D4A5C;
+    text-align: left;
+    line-height: 1.5;
     font-weight: 600;
 }
 
 
 .main-wrapper{
-    background-color: #323232;
+    background-color: #E5F6EF;
     border-radius: 15px;
     max-width: 95vw;
     padding-bottom: 3rem;
+    margin-top:3rem;
+    box-shadow: 2px 2px 20px 10px #00000030;
 }
 
 .container-wrapper{
-    background-color: #ffffff;
-    border-radius: 15px;
-    overflow: auto;
-    max-height: 100vh;
+    height: 100%;
+    padding-left: 2rem;
 }

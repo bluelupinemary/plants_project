@@ -52,6 +52,10 @@ export class PlantstateService {
     return this.http.get(`${this.baseUrl}/plant/${id}`);
   }
 
+  getPlantDetailsByType(id:any,type:string): Observable<any>{
+    return this.http.get(`${this.baseUrl}/plant/${id}/${type}`);
+  }
+
   // getStates(): Observable<any>{
   //   return this.http.get(`${baseUrl}/${id}`);
   // }

@@ -111,6 +111,16 @@ exports.getPlantDetails = (req, res) => {
     })
 }
 
+exports.getPlantDetailsByType = (req, res) => {
+    PlantStateModel.getPlantDetailsByType(req.params.id,req.params.type,(err, plantDetailsByType) => {
+        if(err){
+            res.send(err);
+        }else{
+            res.send(plantDetailsByType)
+        }
+    })
+}
+
 
 
 

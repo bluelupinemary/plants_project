@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SwiperModule } from 'swiper/angular';
 
 import { AppComponent } from './app.component';
 import { InteractivemapComponent } from './components/interactivemap/interactivemap.component';
@@ -12,6 +13,8 @@ import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToprankingComponent } from './components/topranking/topranking.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { NetGenerationDetailsComponent } from './components/net-generation-details/net-generation-details.component';
+import { PercentageDetailsComponent } from './components/percentage-details/percentage-details.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +25,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     SearchbarComponent,
     ToprankingComponent,
     DashboardComponent,
-    
+    NetGenerationDetailsComponent,
+    PercentageDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +34,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     HttpClientModule,
     FontAwesomeModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SwiperModule
   ],
   providers: [],
   bootstrap: [AppComponent]

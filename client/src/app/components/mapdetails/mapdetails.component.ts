@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, Output } from '@angular/core';
-import { PlantstateService } from 'src/app/services/plantstate.service';
+import { Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-mapdetails',
@@ -7,62 +6,21 @@ import { PlantstateService } from 'src/app/services/plantstate.service';
   styleUrls: ['./mapdetails.component.css']
 })
 export class MapdetailsComponent implements OnInit {
-  @Input() plantId : any;
-  plantDetails: any;
-  categoryFormList : any[] = [
-    {
-      "key":"BIOMASS","val": "Biomass"
-    },
-    {
-      "key":"COAL","val": "Coal"
-    },
-    {
-      "key":"OFSL","val": "Fossil"
-    },
-    {
-      "key":"GAS","val": "Gas"
-    },
-    {
-      "key":"GEOTHERMAL","val": "Geothermal"
-    },
-    {
-      "key":"HYDRO","val": "Hydro"
-    },
-    {
-      "key":"NONRENEWABLE","val": "Non-renewable"
-    },
-    {
-      "key":"NUCLEAR","val": "Nuclear"
-    },
-    {
-      "key":"OIL","val": "Oil"
-    },
-    {
-      "key":"OTHF","val": "Other Purchased Fuel"
-    },
-    {
-      "key":"RENEWABLE","val": "Renewable"
-    },
-    {
-      "key":"SOLAR","val": "Solar"
-    },
-    {
-      "key":"WIND","val": "Wind"
-    }
-  ]
+  categoryMap : any = [
+    {"key":"WIND","color":"rgba(245, 39, 145, 0.75)"},
+    {"key":"GAS","color":"rgba(255, 0, 0, 0.75)"},
+    {"key":"OIL","color":"rgba(220, 0, 255, 0.75)"},
+    {"key":"HYDRO","color":"rgba(29, 0, 255, 0.75)"},
+    {"key":"COAL","color":"rgba(0, 0, 0, 0.75)"},
+    {"key":"OTHF","color":"rgba(0, 205, 255, 0.75)"},
+    {"key":"BIOMASS","color":"rgba(0, 255, 8, 0.75)"},
+    {"key":"OFSL","color":"rgba(0, 255, 8, 0.75)"},
+    {"key":"SOLAR","color":"rgba(231, 255, 0, 0.75)"},
+    {"key":"NUCLEAR","color":"rgba(255, 109, 0, 0.75)"},
+    {"key":"GEOTHERMAL","color":"rgba(149, 85, 38, 0.75)"}
+  ];
 
-  
-
-  constructor(private plantstateService: PlantstateService) { }
-
-  ngOnChanges():void {
-    if(this.plantId && this.plantId!==null && this.plantId !=''){
-        this.plantstateService.getPlantDetails(this.plantId).subscribe((plantDetails)=>{
-          this.plantDetails = plantDetails;
-        });
-    }
-   
-  }
+  constructor() { }
 
   ngOnInit(): void {
     }

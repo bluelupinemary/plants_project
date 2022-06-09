@@ -4,10 +4,14 @@
 }
 
 .map-wrapper{
-    background-color: #ffffff;
+    /* background: rgb(37,209,91);
+    background: linear-gradient(79deg, rgba(37,209,91,1) 0%, rgba(36,169,101,1) 100%, rgba(255,0,202,0.5550595238095238) 100%); */
+    background: #ffffff;
     border-radius: 15px;
     overflow: hidden;
     padding: 0.5rem;
+    box-shadow: 0 0 10px 5px #00000020;
+    margin-top:2rem;
 }
 
 .ol-popup {

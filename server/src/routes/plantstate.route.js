@@ -14,6 +14,7 @@ router.get('/plants/all/:category', plantStateController.getPlantsByCategoryList
 router.get('/plants/:state/:category', plantStateController.getPlantsByStateByCategoryList);
 
 router.get('/plant/:id', plantStateController.getPlantDetails);
+router.get('/plant/:id/:type', plantStateController.getPlantDetailsByType);
 
 
 

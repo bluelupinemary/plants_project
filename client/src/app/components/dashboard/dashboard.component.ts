@@ -96,40 +96,18 @@ export class DashboardComponent implements OnInit {
   }
 
   onHeaderSubmitValues(formValues:any){
-    //if top N is selected                                (1)fetch all top N plants from all states for all categories   /
-        //if state is selected                            (2)fetch all top N plants from selected state for all categories /
-          //if category is selected                       (3)fetch all top N plants from selected state for selected category/
-          //if category is not selected                   (2)/
-        //if state is not selected                        (1) /
-          //if category is selected                       (4)fetch all top N plants from all states for selected category
-          //if category is not selected                   (1) /
-    //else if top N is not selected                       (5)fetch all plants from all states for all categories /
-        //if state is selected                            (6)fetch all plants from selected state for all categories/
-          //if category is selected                       (7)fetch all plants from selected state for selected category
-          //if category is not selected                   (6)/ 
-        //if state is not selected                        (5) /
-          //if category is selected                       (8)fetch all plants from all states for selected category
-          //if category is not selected                   (5) /
-    
-    
-
     if(formValues.topNForm!=='' && formValues.topNForm!==null){
       if(formValues.stateForm!=='' && formValues.stateForm!==null && formValues.stateForm!=='null'){
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null && formValues.categoryForm!=='null'){
           this.getTopNPlantsByStateByCategory(formValues.stateForm, formValues.categoryForm, formValues.topNForm);
-          console.log("all top per state per category")
         }else{
           this.getTopNPlantsByState(formValues.stateForm, formValues.topNForm);
-          console.log("top in state all category")
-          // this.isFiltered = true;
         }
       }else{
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null  && formValues.categoryForm!=='null'){
           this.getTopNPlantsByCategory(formValues.categoryForm, formValues.topNForm);
-          console.log("all top all state per category")
         }else{
           this.getTopNPlants(formValues.topNForm);
-          console.log("all top all state all category")
         }
       }
     }else{
@@ -137,19 +115,14 @@ export class DashboardComponent implements OnInit {
       if(formValues.stateForm!=='' && formValues.stateForm!==null   && formValues.stateForm!=='null'){
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null   && formValues.categoryForm!=='null'){
           this.getAllPlantsByStateByCategory(formValues.categoryForm,formValues.stateForm)
-          console.log("all per state per category")
         }else{
           this.getAllPlantsByState(formValues.stateForm)
-          console.log("all per state all category")
         }
       }else{
         if(formValues.categoryForm!=='' && formValues.categoryForm!==null  && formValues.categoryForm!=='null'){
           this.getAllPlantsByCategory(formValues.categoryForm);
-          console.log("all state per category")
         }else{
           this.getAllPlants();
-          console.log("all state category")
-         
         }
       }
     }
@@ -158,7 +131,11 @@ export class DashboardComponent implements OnInit {
 
 
   showPlantDetails(plantId: any){
-    console.log('event in dashboard', plantId)
-    this.plantId = plantId;
+    if(plantId){
+      this.plantId = plantId;
+    }
+    else{
+      this.plantId = null;
+    }
   }
 }

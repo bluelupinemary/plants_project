@@ -1,18 +1,19 @@
 .header-bar{
-    /* background: linear-gradient(90deg, #2abc59 0%, #24a665 100%); */
     background: #ffffff;
     height: 4rem;
     display: flex;
-    margin: 1rem;
     border-radius: 15px;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
+    box-shadow: 0 0 10px 3px #00000010;
+    padding: 0 1rem;
+    column-gap: 5rem;
 }
 
-.top-n-input{
-    max-width: 7rem;
+.filter-title{
+    font-weight: 600;
+    font-size: 1.25em;
 }
+
 
 .input-fields-wrapper{
     column-gap: 1rem;
@@ -20,4 +21,14 @@
 
 .show-plants-btn{
     width: 100%;
+    padding: 0.5em;
+    color: #ffffff;
+    background: rgb(37,209,91);
+    border: 1px solid rgba(36,169,101,1);
+    background: linear-gradient(79deg, rgba(37,209,91,1) 0%, rgba(36,169,101,1) 100%);
+    transition: transform ease-in-out 0.2s;
+}
+
+.show-plants-btn:hover{
+    transform:scale(1.035);
 }
